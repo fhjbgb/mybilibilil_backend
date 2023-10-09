@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用户视频</title>
+		<link rel="icon" href="images/电视.png">
+		<link rel="stylesheet" type="text/css" href="css/animate.css">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/flatpickr.min.css">
+		<link rel="stylesheet" type="text/css" href="css/fontello.css">
+		<link rel="stylesheet" type="text/css" href="css/fontello-codes.css">
+		<link rel="stylesheet" type="text/css" href="css/thumbs-embedded.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" href="css/responsive.css">
+		<link rel="stylesheet" type="text/css" href="css/color.css">
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="userHeadImg">
+			<div class="video-details">
+				<div class="latest_vidz">
+					<div class="latest-vid-option">
+						<h2 class="hd-op"> 修 改 头 像 </h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="vidz_list">
+						<div class="tb-pr" style="border-bottom:0px" >
+							<div class="row">
+								<div id="change-avatar" class="account-details">
+									<h4 class="slct-hd"> 更 改 头 像 （jpg only）</h4>
+									<div class="vid_thumbainl tr">
+										<a href="#" title="">
+											<img :src="userImg" id="image-avatar" alt="">
+										</a>
+										<div class="container">
+											<form>
+												<input id="avatar-upload" type="file" />
+											</form>
+										</div>
+										<div class="ch-pswd">
+											<button id="avatar-btn" type="button"> 更 改</button>
+										</div>
+									</div>
+									<div class="clearfix"></div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+
+
+		<script type="text/javascript">
+			var targetVm = new Vue({
+				el: "#userHeadImg",
+				data: {
+					userImg: "",
+				},
+				methods: {
+					showImg: function() {
+						var user = JSON.parse(sessionStorage.getItem("user"));
+						targetVm.userImg = user.avatar;
+						console.log(targetVm.userImg)
+					}
+				}
+			})
+		</script>
+			<script type="text/javascript">
+			$(document).ready(function() {
+				targetVm.showImg();
+				//分页
+			})
+		</script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/popper.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/flatpickr.js"></script>
+		<script src="js/script.js"></script>
+		<script src="js/getuser.js"></script>
+		<script src="js/useraccount.js"></script>
+	</body>
+</html>

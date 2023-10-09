@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用户视频</title>
+		<link rel="icon" href="images/电视.png">
+		<link rel="stylesheet" type="text/css" href="css/animate.css">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/flatpickr.min.css">
+		<link rel="stylesheet" type="text/css" href="css/fontello.css">
+		<link rel="stylesheet" type="text/css" href="css/fontello-codes.css">
+		<link rel="stylesheet" type="text/css" href="css/thumbs-embedded.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" href="css/responsive.css">
+		<link rel="stylesheet" type="text/css" href="css/color.css">
+		<style type="text/css">
+			/*样式一*/
+			.pagination {
+				text-align: center;
+				font-size: 12px;
+				padding: 10px 0;
+				display: inline-block
+			}
+
+			.pagination a,
+			.pagination button {
+				display: inline-block;
+				padding: 0 10px;
+				height: 28px;
+				line-height: 28px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				text-decoration: none;
+				color: #999;
+				cursor: pointer;
+				margin-right: 5px;
+			}
+
+			.pagination a:hover:not(.disabled):not(.current),
+			.pagination button:hover:not(.disabled):not(.current) {
+				color: #f04848
+			}
+
+			.pagination a.disabled,
+			.pagination button.disabled {
+				color: #bfbfbf;
+				background: #f5f5f5;
+				cursor: no-drop;
+				border: 1px solid #ddd;
+			}
+
+			.pagination a.current,
+			.pagination button.current {
+				color: #fff;
+				background: #f04848;
+				border: 1px solid #f04848;
+			}
+		</style>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="userVideo">
+			<div class="video-details">
+				<div class="latest_vidz">
+					<div class="latest-vid-option">
+						<h2 class="hd-op"> 上 传 的 视 频</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="vidz_list">
+						<div class="tb-pr" style="border-bottom:0px" v-for="item in videoList">
+							<div class="row">
+								<div class="col-xl-8 col-lg-9 col-md-9 col-sm-12">
+									<div class="tab-history acct_page">
+										<div class="videoo">
+											<div class="vid_thumbainl ms br">
+												<a style="cursor: pointer;" @click="videoItem(item.id)" >
+													<img :src="item.avatar" style="width: 90px;height: 100px;">
+													<!-- <span class="watch_later">
+														<i class="icon-watch_later_fill"></i>
+													</span> -->
+												</a>
+											</div>
+											<div class="video_info ms br">
+												<h3> {{item.title}}</h3>
+												<h4> {{item.info}}</h4>
+												<span>播放量：{{item.view}}</span>
+												<ul>
+													<li><span class="br-1">{{item.root}}</span></li>
+												</ul>
+											</div>
+											<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-xl-4 col-lg-3 col-md-3 col-sm-12">
+									<div class="icon-list">
+										<ul>
+											<li><a style="cursor: pointer;" @click="delVideo(item.id)" title=""><i class="icon-cancel"></i></a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="pagination">
+					<button :disabled="isFirstPage" title="首页" @click="firstPage">首页</button>
+					<button :disabled="isFirstPage" @click="prePage" title="上一页">上一页</button>
+					<button v-bind:class="[idx == index?'current':'']" v-for="index of pageindex" @click="isActive(index)">{{index}}</button>
+					<button :disabled="isLastPage" @click="nextPage">下一页</button>
+					<button :disabled="isLastPage" @click="lastPage">尾页</button>
+				</div>
+			</div>
+
+		</div>
+
+		<script type="text/javascript">
+			var targetVm = new Vue({
+				el: "#userVideo",
+				data: {
+					videoList: [],
+					limit: 5,
+					pageNum: 1,
+					pageindex: 0,
+					pageinfo: {},
+					isFirstPage: false,
+					isLastPage: false,
+					total: 0,
+					idx: 1
+				},
+				methods: {
+					qryVideoListByUid: function() {
+						var param = {
+							"limit": targetVm.limit,
+							"count": (targetVm.pageNum - 1) * 5
+						}
+						$.ajax({
+							url: "http://www.qx.kelasong.cn/api/v1/uservideo",
+							type: "post",
+							contentType: "application/json; charset=utf-8",
+							xhrFields: {
+								withCredentials: true
+							},
+							data: JSON.stringify(param),
+							dataType: "json",
+							success: function(data) {
+								targetVm.pageinfo = data.data;
+								targetVm.videoList = data.data.items;
+								targetVm.total = data.data.total;
+								targetVm.pageindex = Math.ceil(targetVm.total / targetVm.limit);
+								if (targetVm.total < targetVm.pageNum * targetVm.limit) {
+									targetVm.isLastPage = true;
+								}else{
+									targetVm.isLastPage = false;
+								}
+								if(targetVm.pageNum==1){
+										targetVm.isFirstPage = true;
+								}else{
+									targetVm.isFirstPage = false;
+								}
+							}
+						})
+					},
+					show: function() {
+						var maxPage = targetVm.pageNum * 5;
+						console.log(maxPage > targetVm.total);
+						console.log(targetVm.isLastPage)
+
+					},
+					//点击页数
+					isActive: function(index) {
+						//变换样式
+						console.log(index)
+						this.idx = index;
+						targetVm.pageNum = index;
+						targetVm.qryVideoListByUid();
+					},
+					firstPage: function() {
+						targetVm.pageNum = 1;
+						targetVm.qryVideoListByUid();
+					},
+					lastPage:function(){
+						targetVm.pageNum=Math.ceil(targetVm.total / targetVm.limit);
+						targetVm.qryVideoListByUid();
+					},
+					prePage:function(){
+						targetVm.pageNum -= 1;
+						targetVm.qryVideoListByUid();
+					},
+					nextPage:function(){
+						targetVm.pageNum += 1;
+						targetVm.qryVideoListByUid();
+					},
+					videoItem:function(id){
+						top.location.href="single_video_fullwidth_page.html?AV="+id;
+					},
+					delVideo:function(id){
+						var param={
+							"vid":id
+						}
+						parent.layer.alert('确定删除吗？', {
+							time: 0,
+							btn: ['是', '否'],
+							//点击按钮"是"时的回调函数
+							yes: index => {
+								//关闭layer
+								parent.layer.close(index);
+								$.ajax({
+									url: "/api/v1/deletevideo",
+									type: "post",
+									contentType: "application/json; charset=utf-8",
+									xhrFields: {
+										withCredentials: true
+									},
+									data: JSON.stringify(param),
+									dataType: "json",
+									success: function(data) {
+										console.log(data)
+										layer.msg(data.msg);
+										targetVm.qryVideoListByUid();
+									}
+								})
+							}
+						})
+					}
+				},
+				watch: {
+					pageNum: function(val) {
+						targetVm.idx=val 
+					}
+				}
+			})
+		</script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				targetVm.qryVideoListByUid();
+				//分页
+			})
+		</script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/popper.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/flatpickr.js"></script>
+		<script src="js/script.js"></script>
+		<script src="js/getuser.js"></script>
+		<script src="js/useraccount.js"></script>
+		<script src="js/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	</body>
+</html>

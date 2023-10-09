@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用户视频</title>
+		<link rel="icon" href="images/电视.png">
+		<link rel="stylesheet" type="text/css" href="css/animate.css">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/flatpickr.min.css">
+		<link rel="stylesheet" type="text/css" href="css/fontello.css">
+		<link rel="stylesheet" type="text/css" href="css/fontello-codes.css">
+		<link rel="stylesheet" type="text/css" href="css/thumbs-embedded.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" href="css/responsive.css">
+		<link rel="stylesheet" type="text/css" href="css/color.css">
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="chengeItem">
+			<div class="video-details">
+				<div class="latest_vidz">
+					<div class="latest-vid-option">
+						<h2 class="hd-op"> 详 细 信 息</h2>
+						<div class="clearfix"></div>
+					</div>
+					<div class="vidz_list">
+						<div class="tb-pr" style="border-bottom:0px">
+							<div class="row" align="center">
+								<div id="detail-all" class="account-details" align="center">
+									<div class="account_details_content">
+										<h4 class="slct-hd">邮 箱</h4>
+										<div class="dob ">
+											<input type="text" name="email" v-model="email" placeholder="邮箱">
+										</div>
+										<h4 class="slct-hd"> 性 别</h4>
+										<ul class="gend">
+											<li>
+												<div class="chekbox-lg">
+													<label>
+														<input type="radio" name="gender" v-model="sex" value="男">
+														<b class="checkmark"></b>
+														<span>男</span>
+													</label>
+												</div>
+											</li>
+											<li>
+												<div class="chekbox-lg">
+													<label>
+														<input type="radio" name="gender" v-model="sex" value="女">
+														<b class="checkmark"> </b>
+														<span>女</span>
+													</label>
+												</div>
+											</li>
+										</ul>
+										<h4 class="slct-hd">出 生 日 期 </h4>
+										<div class="dob flatpickr">
+											<input type="number" name="date" class="flatpickr-input" v-model="birthday" placeholder="选 择 生 日..."
+											 data-input>
+											<a href="#" title="" class="arw_vz">
+												<i class="icon-arrow_below"></i>
+											</a>
+										</div>
+										<div class="ch-pswd">
+											<button type="button" @click="changeInfo"> 更 改</button>
+										</div>
+									</div>
+									<div class="clearfix"></div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script type="text/javascript">
+			var targetVm = new Vue({
+				el: "#chengeItem",
+				data: {
+					email: "",
+					sex: "",
+					birthday: ""
+				},
+				methods: {
+					changeInfo: function() {
+						var param = {
+							"email": targetVm.email,
+							"gender": targetVm.sex,
+							"brithday": targetVm.birthday,
+						}
+						console.log(JSON.stringify(param))
+						$.ajax({
+							url: "http://www.qx.kelasong.cn/api/v1/modiinfo",
+							type: "post",
+							contentType: "application/json; charset=utf-8",
+							xhrFields: {
+								withCredentials: true
+							},
+							data: JSON.stringify(param),
+							dataType: "json",
+							success: function(data) {
+								console.log(data)
+								parent.layer.msg(data.msg);
+							}
+						})
+					},
+					qryUserInfo: function() {
+						$.ajax({
+							url: "http://www.qx.kelasong.cn/api/v1/userinfo",
+							type: "get",
+							contentType: "application/json; charset=utf-8",
+							xhrFields: {
+								withCredentials: true
+							},
+							data: {},
+							dataType: "json",
+							success: function(data) {
+								console.log(data.data)
+								targetVm.email = data.data.email;
+								targetVm.sex = data.data.gender;
+								targetVm.birthday = data.data.brithday;
+								console.log(targetVm.email)
+								console.log(targetVm.sex)
+								console.log(targetVm.birthday)
+							}
+						})
+					}
+				}
+			})
+		</script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				targetVm.qryUserInfo();
+				//分页
+			})
+		</script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/popper.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/flatpickr.js"></script>
+		<script src="js/script.js"></script>
+		<script src="js/getuser.js"></script>
+		<script src="js/useraccount.js"></script>
+	</body>
+</html>
